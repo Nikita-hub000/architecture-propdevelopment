@@ -1,0 +1,9 @@
+# Namespace для сервисов умного дома
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: propdevelopment
+  labels:
+    name: propdevelopment
+    environment: production
+    component: smart-home
