@@ -1,0 +1,122 @@
+# Сетевая политика для разрешения трафика между front-end и back-end-api
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: non-admin-api-allow
+  namespace: propdevelopment
+spec:
+  podSelector:
+    matchLabels:
+      role: front-end
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          role: back-end-api
+    ports:
+    - protocol: TCP
+      port: 80
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          role: back-end-api
+    ports:
+    - protocol: TCP
+      port: 8080
+
+---
+# Сетевая политика для разрешения трафика между admin-front-end и admin-back-end-api
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: admin-api-allow
+  namespace: propdevelopment
+spec:
+  podSelector:
+    matchLabels:
+      role: admin-front-end
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          role: admin-back-end-api
+    ports:
+    - protocol: TCP
+      port: 80
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          role: admin-back-end-api
+    ports:
+    - protocol: TCP
+      port: 8080
+
+---
+# Сетевая политика для back-end-api (разрешить трафик в обе стороны с front-end)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: backend-api-policy
+  namespace: propdevelopment
+spec:
+  podSelector:
+    matchLabels:
+      role: back-end-api
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          role: front-end
+    ports:
+    - protocol: TCP
+      port: 8080
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          role: front-end
+    ports:
+    - protocol: TCP
+      port: 80
+
+---
+# Сетевая политика для admin-back-end-api (разрешить трафик в обе стороны с admin-front-end)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: admin-backend-api-policy
+  namespace: propdevelopment
+spec:
+  podSelector:
+    matchLabels:
+      role: admin-back-end-api
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          role: admin-front-end
+    ports:
+    - protocol: TCP
+      port: 8080
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          role: admin-front-end
+    ports:
+    - protocol: TCP
+      port: 80
